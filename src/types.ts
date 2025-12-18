@@ -193,3 +193,111 @@ export interface FundQuote {
   raw: string[];
 }
 
+/**
+ * A 股历史 K 线（日/周/月）
+ */
+export interface HistoryKline {
+  /** 日期 YYYY-MM-DD */
+  date: string;
+  /** 股票代码 */
+  code: string;
+  /** 开盘价 */
+  open: number | null;
+  /** 收盘价 */
+  close: number | null;
+  /** 最高价 */
+  high: number | null;
+  /** 最低价 */
+  low: number | null;
+  /** 成交量 */
+  volume: number | null;
+  /** 成交额 */
+  amount: number | null;
+  /** 振幅% */
+  amplitude: number | null;
+  /** 涨跌幅% */
+  changePercent: number | null;
+  /** 涨跌额 */
+  change: number | null;
+  /** 换手率% */
+  turnoverRate: number | null;
+}
+
+/**
+ * A 股分时数据（1 分钟）
+ */
+export interface MinuteTimeline {
+  /** 时间 YYYY-MM-DD HH:mm */
+  time: string;
+  /** 开盘价 */
+  open: number | null;
+  /** 收盘价 */
+  close: number | null;
+  /** 最高价 */
+  high: number | null;
+  /** 最低价 */
+  low: number | null;
+  /** 成交量 */
+  volume: number | null;
+  /** 成交额 */
+  amount: number | null;
+  /** 均价 */
+  avgPrice: number | null;
+}
+
+/**
+ * A 股分钟 K 线（5/15/30/60 分钟）
+ */
+export interface MinuteKline {
+  /** 时间 YYYY-MM-DD HH:mm */
+  time: string;
+  /** 开盘价 */
+  open: number | null;
+  /** 收盘价 */
+  close: number | null;
+  /** 最高价 */
+  high: number | null;
+  /** 最低价 */
+  low: number | null;
+  /** 涨跌幅% */
+  changePercent: number | null;
+  /** 涨跌额 */
+  change: number | null;
+  /** 成交量 */
+  volume: number | null;
+  /** 成交额 */
+  amount: number | null;
+  /** 振幅% */
+  amplitude: number | null;
+  /** 换手率% */
+  turnoverRate: number | null;
+}
+
+/**
+ * 当日分时走势数据（腾讯数据源）
+ */
+export interface TodayTimeline {
+  /** 时间 HH:mm */
+  time: string;
+  /** 成交价 */
+  price: number;
+  /** 累计成交量（手） */
+  volume: number;
+  /** 累计成交额（元） */
+  amount: number;
+  /** 当日均价（累计成交额 / 累计成交量 × 100） */
+  avgPrice: number;
+}
+
+/**
+ * 当日分时走势响应
+ */
+export interface TodayTimelineResponse {
+  /** 股票代码 */
+  code: string;
+  /** 交易日期 YYYYMMDD */
+  date: string;
+  /** 分时数据列表 */
+  data: TodayTimeline[];
+}
+
