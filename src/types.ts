@@ -301,3 +301,35 @@ export interface TodayTimelineResponse {
   data: TodayTimeline[];
 }
 
+/**
+ * 港股/美股历史 K 线
+ */
+export interface HKUSHistoryKline {
+  /** 日期 YYYY-MM-DD */
+  date: string;
+  /** 股票代码 */
+  code: string;
+  /** 股票名称 */
+  name: string;
+  /** 开盘价 */
+  open: number | null;
+  /** 收盘价 */
+  close: number | null;
+  /** 最高价 */
+  high: number | null;
+  /** 最低价 */
+  low: number | null;
+  /** 成交量 */
+  volume: number | null;
+  /** 成交额 */
+  amount: number | null;
+  /** 振幅% */
+  amplitude: number | null;
+  /** 涨跌幅% */
+  changePercent: number | null;
+  /** 涨跌额 */
+  change: number | null;
+  /** 换手率% */
+  turnoverRate: number | null;
+}
+
