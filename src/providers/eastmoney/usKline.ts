@@ -1,7 +1,13 @@
 /**
  * 东方财富 - 美股 K 线
  */
-import { RequestClient, EM_US_KLINE_URL, toNumber } from '../../core';
+import {
+  RequestClient,
+  EM_US_KLINE_URL,
+  assertKlinePeriod,
+  assertAdjustType,
+  toNumber,
+} from '../../core';
 import type { HKUSHistoryKline } from '../../types';
 
 export interface USKlineOptions {
@@ -30,6 +36,8 @@ export async function getUSHistoryKline(
     startDate = '19700101',
     endDate = '20500101',
   } = options;
+  assertKlinePeriod(period);
+  assertAdjustType(adjust);
 
   const periodMap = { daily: '101', weekly: '102', monthly: '103' } as const;
   const adjustMap = { '': '0', qfq: '1', hfq: '2' } as const;
@@ -89,4 +97,3 @@ export async function getUSHistoryKline(
     };
   });
 }
-

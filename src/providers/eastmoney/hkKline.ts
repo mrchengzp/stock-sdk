@@ -1,7 +1,13 @@
 /**
  * 东方财富 - 港股 K 线
  */
-import { RequestClient, EM_HK_KLINE_URL, toNumber } from '../../core';
+import {
+  RequestClient,
+  EM_HK_KLINE_URL,
+  assertKlinePeriod,
+  assertAdjustType,
+  toNumber,
+} from '../../core';
 import type { HKUSHistoryKline } from '../../types';
 
 export interface HKKlineOptions {
@@ -29,6 +35,8 @@ export async function getHKHistoryKline(
     startDate = '19700101',
     endDate = '20500101',
   } = options;
+  assertKlinePeriod(period);
+  assertAdjustType(adjust);
 
   // 移除可能的 hk 前缀，确保是 5 位数字
   const pureSymbol = symbol.replace(/^hk/i, '').padStart(5, '0');
@@ -90,4 +98,3 @@ export async function getHKHistoryKline(
     };
   });
 }
-

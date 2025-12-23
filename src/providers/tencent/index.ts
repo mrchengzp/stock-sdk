@@ -23,7 +23,11 @@ export { getTodayTimeline } from './timeline';
 // 批量
 export {
   getAShareCodeList,
+  getUSCodeList,
+  getHKCodeList,
   getAllQuotesByCodes,
+  getAllHKQuotesByCodes,
+  getAllUSQuotesByCodes,
   type GetAllAShareQuotesOptions,
 } from './batch';
 

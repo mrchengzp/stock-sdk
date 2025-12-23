@@ -158,6 +158,21 @@ export class StockSDK {
   }
 
   /**
+   * 从远程获取美股代码列表
+   * @param includeMarket 是否包含市场前缀（如 105.、106.），默认 true
+   */
+  getUSCodeList(includeMarket: boolean = true): Promise<string[]> {
+    return tencent.getUSCodeList(this.client, includeMarket);
+  }
+
+  /**
+   * 从远程获取港股代码列表
+   */
+  getHKCodeList(): Promise<string[]> {
+    return tencent.getHKCodeList(this.client);
+  }
+
+  /**
    * 获取全部 A 股实时行情
    */
   async getAllAShareQuotes(
@@ -165,6 +180,27 @@ export class StockSDK {
   ): Promise<FullQuote[]> {
     const codes = await this.getAShareCodeList();
     return this.getAllQuotesByCodes(codes, options);
+  }
+
+  /**
+   * 获取全部港股实时行情
+   */
+  async getAllHKShareQuotes(
+    options: tencent.GetAllAShareQuotesOptions = {}
+  ): Promise<HKQuote[]> {
+    const codes = await this.getHKCodeList();
+    return tencent.getAllHKQuotesByCodes(this.client, codes, options);
+  }
+
+  /**
+   * 获取全部美股实时行情
+   */
+  async getAllUSShareQuotes(
+    options: tencent.GetAllAShareQuotesOptions = {}
+  ): Promise<USQuote[]> {
+    // 使用不带市场前缀的代码
+    const codes = await this.getUSCodeList(false);
+    return tencent.getAllUSQuotesByCodes(this.client, codes, options);
   }
 
   /**

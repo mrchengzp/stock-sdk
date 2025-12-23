@@ -161,18 +161,50 @@ export interface HKQuote {
 }
 
 /**
- * 美股简要行情
+ * 美股行情
  */
 export interface USQuote {
+  /** 市场标识 */
   marketId: string;
+  /** 名称 */
   name: string;
+  /** 股票代码 */
   code: string;
+  /** 最新价 */
   price: number;
-  change: number;
-  changePercent: number;
+  /** 昨收 */
+  prevClose: number;
+  /** 今开 */
+  open: number;
+  /** 成交量 */
   volume: number;
+  /** 时间 */
+  time: string;
+  /** 涨跌额 */
+  change: number;
+  /** 涨跌幅% */
+  changePercent: number;
+  /** 最高 */
+  high: number;
+  /** 最低 */
+  low: number;
+  /** 成交额 */
   amount: number;
-  marketCap: number | null;
+  /** 换手率% */
+  turnoverRate: number | null;
+  /** 市盈率 */
+  pe: number | null;
+  /** 振幅% */
+  amplitude: number | null;
+  /** 总市值(亿) */
+  totalMarketCap: number | null;
+  /** 市净率 */
+  pb: number | null;
+  /** 52周最高价 */
+  high52w: number | null;
+  /** 52周最低价 */
+  low52w: number | null;
+  /** 原始字段数组 */
   raw: string[];
 }
 

@@ -447,6 +447,27 @@ console.log(codes[0]);  <span class="comment">// 'bj920000'</span>
 <span class="keyword">const</span> pureCodes = <span class="keyword">await</span> sdk.<span class="function">getAShareCodeList</span>(<span class="keyword">false</span>);
 console.log(pureCodes[0]);  <span class="comment">// '920000'</span>`
       },
+      getUSCodeList: {
+        name: 'getUSCodeList',
+        desc: '获取全部美股代码列表',
+        params: [
+          { key: 'includeMarket', label: '包含市场前缀', type: 'select', default: 'true', required: false, options: [{ value: 'true', label: '是' }, { value: 'false', label: '否' }] }
+        ],
+        code: `<span class="comment">// 包含市场前缀（默认）</span>
+<span class="keyword">const</span> codes = <span class="keyword">await</span> sdk.<span class="function">getUSCodeList</span>();
+console.log(codes[0]);  <span class="comment">// '105.MSFT'</span>
+
+<span class="comment">// 不包含市场前缀</span>
+<span class="keyword">const</span> pureCodes = <span class="keyword">await</span> sdk.<span class="function">getUSCodeList</span>(<span class="keyword">false</span>);
+console.log(pureCodes[0]);  <span class="comment">// 'MSFT'</span>`
+      },
+      getHKCodeList: {
+        name: 'getHKCodeList',
+        desc: '获取全部港股代码列表',
+        params: [],
+        code: `<span class="keyword">const</span> codes = <span class="keyword">await</span> sdk.<span class="function">getHKCodeList</span>();
+console.log(codes[0]);  <span class="comment">// '00700'</span>`
+      },
       getAllAShareQuotes: {
         name: 'getAllAShareQuotes',
         desc: '获取全部 A 股实时行情',
@@ -462,6 +483,38 @@ console.log(pureCodes[0]);  <span class="comment">// '920000'</span>`
   }
 });
 console.log(<span class="string">\`共获取 \${allQuotes.length} 只股票\`</span>);`
+      },
+      getAllHKShareQuotes: {
+        name: 'getAllHKShareQuotes',
+        desc: '获取全部港股实时行情',
+        params: [
+          { key: 'batchSize', label: '批量大小', type: 'number', default: '500', required: false, placeholder: '默认 500' },
+          { key: 'concurrency', label: '并发数', type: 'number', default: '7', required: false, placeholder: '默认 7' }
+        ],
+        code: `<span class="keyword">const</span> allQuotes = <span class="keyword">await</span> sdk.<span class="function">getAllHKShareQuotes</span>({
+  batchSize: <span class="string">500</span>,
+  concurrency: <span class="string">7</span>,
+  onProgress: (completed, total) => {
+    console.log(<span class="string">\`进度: \${completed}/\${total}\`</span>);
+  }
+});
+console.log(<span class="string">\`共获取 \${allQuotes.length} 只港股\`</span>);`
+      },
+      getAllUSShareQuotes: {
+        name: 'getAllUSShareQuotes',
+        desc: '获取全部美股实时行情',
+        params: [
+          { key: 'batchSize', label: '批量大小', type: 'number', default: '500', required: false, placeholder: '默认 500' },
+          { key: 'concurrency', label: '并发数', type: 'number', default: '7', required: false, placeholder: '默认 7' }
+        ],
+        code: `<span class="keyword">const</span> allQuotes = <span class="keyword">await</span> sdk.<span class="function">getAllUSShareQuotes</span>({
+  batchSize: <span class="string">500</span>,
+  concurrency: <span class="string">7</span>,
+  onProgress: (completed, total) => {
+    console.log(<span class="string">\`进度: \${completed}/\${total}\`</span>);
+  }
+});
+console.log(<span class="string">\`共获取 \${allQuotes.length} 只美股\`</span>);`
       },
       getFundFlow: {
         name: 'getFundFlow',
@@ -785,8 +838,36 @@ data.forEach(k => {
             result = await sdk.getAShareCodeList(params.includeExchange === 'true');
             break;
           }
+          case 'getUSCodeList': {
+            result = await sdk.getUSCodeList(params.includeMarket === 'true');
+            break;
+          }
+          case 'getHKCodeList': {
+            result = await sdk.getHKCodeList();
+            break;
+          }
           case 'getAllAShareQuotes': {
             result = await sdk.getAllAShareQuotes({
+              batchSize: parseInt(params.batchSize) || 500,
+              concurrency: parseInt(params.concurrency) || 7,
+              onProgress: (completed, total) => {
+                resultEl.textContent = `加载中... ${completed}/${total} 批次`;
+              }
+            });
+            break;
+          }
+          case 'getAllHKShareQuotes': {
+            result = await sdk.getAllHKShareQuotes({
+              batchSize: parseInt(params.batchSize) || 500,
+              concurrency: parseInt(params.concurrency) || 7,
+              onProgress: (completed, total) => {
+                resultEl.textContent = `加载中... ${completed}/${total} 批次`;
+              }
+            });
+            break;
+          }
+          case 'getAllUSShareQuotes': {
+            result = await sdk.getAllUSShareQuotes({
               batchSize: parseInt(params.batchSize) || 500,
               concurrency: parseInt(params.concurrency) || 7,
               onProgress: (completed, total) => {

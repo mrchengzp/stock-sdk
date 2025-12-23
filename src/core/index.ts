@@ -18,11 +18,29 @@ export {
 export {
   chunkArray,
   asyncPool,
+  assertPositiveInteger,
+  assertKlinePeriod,
+  assertMinutePeriod,
+  assertAdjustType,
   getMarketCode,
   getPeriodCode,
   getAdjustCode,
 } from './utils';
 
 // 常量
-export * from './constants';
-
+export {
+  TENCENT_BASE_URL,
+  TENCENT_MINUTE_URL,
+  A_SHARE_LIST_URL,
+  US_LIST_URL,
+  HK_LIST_URL,
+  CODE_LIST_URL,
+  EM_KLINE_URL,
+  EM_TRENDS_URL,
+  EM_HK_KLINE_URL,
+  EM_US_KLINE_URL,
+  DEFAULT_TIMEOUT,
+  DEFAULT_BATCH_SIZE,
+  MAX_BATCH_SIZE,
+  DEFAULT_CONCURRENCY,
+} from './constants';

@@ -6,6 +6,9 @@ import {
   EM_KLINE_URL,
   EM_TRENDS_URL,
   getMarketCode,
+  assertKlinePeriod,
+  assertMinutePeriod,
+  assertAdjustType,
   toNumber,
 } from '../../core';
 import type { HistoryKline, MinuteTimeline, MinuteKline } from '../../types';
@@ -46,6 +49,8 @@ export async function getHistoryKline(
     startDate = '19700101',
     endDate = '20500101',
   } = options;
+  assertKlinePeriod(period);
+  assertAdjustType(adjust);
 
   // 移除可能的交易所前缀
   const pureSymbol = symbol.replace(/^(sh|sz|bj)/, '');
@@ -118,6 +123,8 @@ export async function getMinuteKline(
     startDate = '1979-09-01 09:32:00',
     endDate = '2222-01-01 09:32:00',
   } = options;
+  assertMinutePeriod(period);
+  assertAdjustType(adjust);
 
   // 移除可能的交易所前缀
   const pureSymbol = symbol.replace(/^(sh|sz|bj)/, '');
@@ -220,4 +227,3 @@ export async function getMinuteKline(
       .filter((row) => row.time >= start && row.time <= end);
   }
 }
-

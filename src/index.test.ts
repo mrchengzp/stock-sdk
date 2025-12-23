@@ -74,22 +74,44 @@ describe('TencentStockSDK', () => {
   });
 
   describe('getHKQuotes', () => {
-    it('should return 港股扩展行情', async () => {
-      const res = await sdk.getHKQuotes(['09988']);
+    it('should return 港股行情 with full fields', async () => {
+      const res = await sdk.getHKQuotes(['00700']);
       expect(res.length).toBeGreaterThan(0);
       const q = res[0];
-      expect(q.code).toBe('09988');
+      expect(q.code).toBe('00700');
       expect(typeof q.price).toBe('number');
+      // 验证新增字段
+      expect(q).toHaveProperty('prevClose');
+      expect(q).toHaveProperty('open');
+      expect(q).toHaveProperty('high');
+      expect(q).toHaveProperty('low');
+      expect(q).toHaveProperty('volume');
+      expect(q).toHaveProperty('amount');
+      expect(q).toHaveProperty('time');
+      expect(q).toHaveProperty('currency');
+      expect(q).toHaveProperty('totalMarketCap');
     });
   });
 
   describe('getUSQuotes', () => {
-    it('should return 美股简要行情', async () => {
-      const res = await sdk.getUSQuotes(['BABA']);
+    it('should return 美股行情 with full fields', async () => {
+      const res = await sdk.getUSQuotes(['AAPL']);
       expect(res.length).toBeGreaterThan(0);
       const q = res[0];
-      expect(q.code).toContain('BABA');
+      expect(q.code).toContain('AAPL');
       expect(typeof q.price).toBe('number');
+      // 验证新增字段
+      expect(q).toHaveProperty('prevClose');
+      expect(q).toHaveProperty('open');
+      expect(q).toHaveProperty('high');
+      expect(q).toHaveProperty('low');
+      expect(q).toHaveProperty('volume');
+      expect(q).toHaveProperty('amount');
+      expect(q).toHaveProperty('time');
+      expect(q).toHaveProperty('pe');
+      expect(q).toHaveProperty('totalMarketCap');
+      expect(q).toHaveProperty('high52w');
+      expect(q).toHaveProperty('low52w');
     });
   });
 
@@ -178,6 +200,71 @@ describe('getAShareCodeList', () => {
     expect(codeList).toContain('sz000858'); // 五粮液
     expect(codeList).toContain('sh600000'); // 浦发银行
     expect(codeList).toContain('sh600519'); // 贵州茅台
+  });
+});
+
+describe('getUSCodeList', () => {
+  it('should return 美股代码列表 from remote', async () => {
+    const codeList = await sdk.getUSCodeList();
+    expect(Array.isArray(codeList)).toBe(true);
+    expect(codeList.length).toBeGreaterThan(1000);
+    // 验证包含市场前缀
+    expect(codeList[0]).toMatch(/^\d{3}\.[A-Z]+$/);
+  });
+
+  it('should return codes without market prefix', async () => {
+    const codeList = await sdk.getUSCodeList(false);
+    expect(Array.isArray(codeList)).toBe(true);
+    expect(codeList.length).toBeGreaterThan(1000);
+    // 验证不含市场前缀
+    expect(codeList[0]).toMatch(/^[A-Z]+$/);
+  });
+});
+
+describe('getHKCodeList', () => {
+  it('should return 港股代码列表 from remote', async () => {
+    const codeList = await sdk.getHKCodeList();
+    expect(Array.isArray(codeList)).toBe(true);
+    expect(codeList.length).toBeGreaterThan(1000);
+    // 验证是数字代码
+    expect(codeList[0]).toMatch(/^\d+$/);
+  });
+
+  it('should return codes that work with getHKQuotes', async () => {
+    const codeList = await sdk.getHKCodeList();
+    // 使用代码列表中的前 3 个代码测试
+    const testCodes = codeList.slice(0, 3);
+    const quotes = await sdk.getHKQuotes(testCodes);
+    // 验证返回数据
+    expect(quotes.length).toBeGreaterThan(0);
+    if (quotes.length > 0) {
+      const q = quotes[0];
+      expect(q).toHaveProperty('code');
+      expect(q).toHaveProperty('name');
+      expect(q).toHaveProperty('price');
+      expect(q).toHaveProperty('currency');
+      expect(typeof q.price).toBe('number');
+    }
+  });
+});
+
+describe('getUSCodeList codes work with getUSQuotes', () => {
+  it('should return codes that work with getUSQuotes', async () => {
+    const codeList = await sdk.getUSCodeList(false);
+    // 使用代码列表中的前 5 个代码测试（有些股票可能没有数据）
+    const testCodes = codeList.slice(0, 5);
+    const quotes = await sdk.getUSQuotes(testCodes);
+    // 验证返回数据
+    expect(quotes.length).toBeGreaterThan(0);
+    if (quotes.length > 0) {
+      const q = quotes[0];
+      expect(q).toHaveProperty('code');
+      expect(q).toHaveProperty('name');
+      expect(q).toHaveProperty('price');
+      expect(q).toHaveProperty('prevClose');
+      expect(q).toHaveProperty('totalMarketCap');
+      expect(typeof q.price).toBe('number');
+    }
   });
 });
 
@@ -438,6 +525,12 @@ describe('utils', () => {
       const chunks = chunkArray(arr, 10);
       expect(chunks).toEqual([[1, 2, 3]]);
     });
+
+    it('should throw for invalid chunk size', () => {
+      expect(() => chunkArray([1, 2], 0)).toThrow(/chunkSize/i);
+      expect(() => chunkArray([1, 2], -1)).toThrow(/chunkSize/i);
+      expect(() => chunkArray([1, 2], 1.5)).toThrow(/chunkSize/i);
+    });
   });
 
   describe('asyncPool', () => {
@@ -479,6 +572,11 @@ describe('utils', () => {
       const tasks = [1, 2, 3].map(n => async () => n * 2);
       const output = await asyncPool(tasks, 1);
       expect(output).toEqual([2, 4, 6]);
+    });
+
+    it('should throw for invalid concurrency', async () => {
+      await expect(asyncPool([async () => 1], 0)).rejects.toThrow(/concurrency/i);
+      await expect(asyncPool([async () => 1], -1)).rejects.toThrow(/concurrency/i);
     });
   });
 });
@@ -673,6 +771,71 @@ describe('边界情况', () => {
       expect(progressCalled).toBe(true);
     }, 60000);
   });
+
+  describe('getAllHKShareQuotes', () => {
+    it('should return 港股全量行情 with correct HKQuote structure', async () => {
+      const customSdk = new StockSDK();
+      const res = await customSdk.getAllHKShareQuotes({
+        batchSize: 50,
+        concurrency: 2,
+      });
+      expect(res.length).toBeGreaterThan(0);
+      
+      // 验证每条数据都符合 HKQuote 结构
+      const sample = res[0];
+      expect(sample).toHaveProperty('marketId');
+      expect(sample).toHaveProperty('name');
+      expect(sample).toHaveProperty('code');
+      expect(sample).toHaveProperty('price');
+      expect(sample).toHaveProperty('prevClose');
+      expect(sample).toHaveProperty('open');
+      expect(sample).toHaveProperty('volume');
+      expect(sample).toHaveProperty('time');
+      expect(sample).toHaveProperty('change');
+      expect(sample).toHaveProperty('changePercent');
+      expect(sample).toHaveProperty('high');
+      expect(sample).toHaveProperty('low');
+      expect(sample).toHaveProperty('amount');
+      expect(sample).toHaveProperty('currency');
+      expect(sample).toHaveProperty('raw');
+      
+      // 验证价格是数字
+      expect(typeof sample.price).toBe('number');
+      expect(typeof sample.changePercent).toBe('number');
+    }, 60000);
+  });
+
+  describe('getAllUSShareQuotes', () => {
+    it('should return 美股全量行情 with correct USQuote structure', async () => {
+      const customSdk = new StockSDK();
+      const res = await customSdk.getAllUSShareQuotes({
+        batchSize: 50,
+        concurrency: 2,
+      });
+      expect(res.length).toBeGreaterThan(0);
+      
+      // 验证每条数据都符合 USQuote 结构
+      const sample = res[0];
+      expect(sample).toHaveProperty('marketId');
+      expect(sample).toHaveProperty('name');
+      expect(sample).toHaveProperty('code');
+      expect(sample).toHaveProperty('price');
+      expect(sample).toHaveProperty('prevClose');
+      expect(sample).toHaveProperty('open');
+      expect(sample).toHaveProperty('high');
+      expect(sample).toHaveProperty('low');
+      expect(sample).toHaveProperty('change');
+      expect(sample).toHaveProperty('changePercent');
+      expect(sample).toHaveProperty('volume');
+      expect(sample).toHaveProperty('amount');
+      expect(sample).toHaveProperty('totalMarketCap');
+      expect(sample).toHaveProperty('raw');
+      
+      // 验证价格是数字
+      expect(typeof sample.price).toBe('number');
+      expect(typeof sample.changePercent).toBe('number');
+    }, 60000);
+  });
 });
 
 // ============ 多种周期和参数组合测试 ============
@@ -720,6 +883,42 @@ describe('错误处理', () => {
     it('getTodayTimeline should throw when API returns error', async () => {
       await expect(sdk.getTodayTimeline('abc123')).rejects.toThrow();
     });
+  });
+});
+
+// ============ 参数校验测试 ============
+describe('参数校验', () => {
+  it('getHistoryKline should throw for invalid period', async () => {
+    await expect(
+      sdk.getHistoryKline('000001', { period: 'yearly' as any })
+    ).rejects.toThrow(/period/i);
+  });
+
+  it('getHistoryKline should throw for invalid adjust', async () => {
+    await expect(
+      sdk.getHistoryKline('000001', { adjust: 'bad' as any })
+    ).rejects.toThrow(/adjust/i);
+  });
+
+  it('getMinuteKline should throw for invalid period', async () => {
+    await expect(
+      sdk.getMinuteKline('000001', { period: '2' as any })
+    ).rejects.toThrow(/period/i);
+  });
+
+  it('getMinuteKline should throw for invalid adjust', async () => {
+    await expect(
+      sdk.getMinuteKline('000001', { period: '5', adjust: 'bad' as any })
+    ).rejects.toThrow(/adjust/i);
+  });
+
+  it('getAllQuotesByCodes should throw for invalid batch options', async () => {
+    await expect(
+      sdk.getAllQuotesByCodes(['sz000858'], { batchSize: 0 as any })
+    ).rejects.toThrow(/batchSize/i);
+    await expect(
+      sdk.getAllQuotesByCodes(['sz000858'], { concurrency: 0 as any })
+    ).rejects.toThrow(/concurrency/i);
   });
 });
 
@@ -1111,9 +1310,11 @@ describe('Technical Indicators', () => {
   describe('calcCCI', () => {
     it('should calculate CCI correctly', () => {
       const data = Array.from({ length: 20 }, (_, i) => ({
+        open: 100 + i,
         high: 110 + i,
         low: 90 + i,
         close: 100 + i,
+        volume: 1000,
       }));
       const cci = calcCCI(data, { period: 14 });
       expect(cci.length).toBe(20);
@@ -1126,9 +1327,11 @@ describe('Technical Indicators', () => {
     it('should handle steady trend', () => {
       // 稳定上涨趋势，CCI 应该为正
       const data = Array.from({ length: 20 }, (_, i) => ({
+        open: 100 + i * 2,
         high: 110 + i * 2,
         low: 90 + i * 2,
         close: 100 + i * 2,
+        volume: 1000,
       }));
       const cci = calcCCI(data, { period: 14 });
       expect(cci[19].cci).toBeGreaterThan(0);
@@ -1138,9 +1341,11 @@ describe('Technical Indicators', () => {
   describe('calcATR', () => {
     it('should calculate ATR correctly', () => {
       const data = Array.from({ length: 20 }, (_, i) => ({
+        open: 100 + i,
         high: 110 + i,
         low: 90 + i,
         close: 100 + i,
+        volume: 1000,
       }));
       const atr = calcATR(data, { period: 14 });
       expect(atr.length).toBe(20);
@@ -1154,8 +1359,8 @@ describe('Technical Indicators', () => {
 
     it('should calculate TR correctly', () => {
       const data = [
-        { high: 110, low: 90, close: 100 },
-        { high: 115, low: 95, close: 105 },
+        { open: 100, high: 110, low: 90, close: 100, volume: 1000 },
+        { open: 105, high: 115, low: 95, close: 105, volume: 1000 },
       ];
       const atr = calcATR(data, { period: 14 });
       // TR = max(high - low, |high - prevClose|, |low - prevClose|)
@@ -1197,5 +1402,3 @@ describe('Technical Indicators', () => {
     });
   });
 });
-
-

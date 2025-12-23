@@ -145,7 +145,11 @@ console.log(`共获取 ${allQuotes.length} 只股票`);
 | 方法 | 说明 |
 |------|------|
 | [`getAShareCodeList`](#getasharecodellistincludeexchange-promisestring) | 获取全部 A 股代码 |
+| [`getUSCodeList`](#getuscodelistincludemarket-promisestring) | 获取全部美股代码 |
+| [`getHKCodeList`](#gethkcodelist-promisestring) | 获取全部港股代码 |
 | [`getAllAShareQuotes`](#getallasharequotesoptions-promisefullquote) | 获取全市场 A 股行情 |
+| [`getAllHKShareQuotes`](#getallhksharequotesoptions-promisehkquote) | 获取全市场港股行情 |
+| [`getAllUSShareQuotes`](#getallusssharequotesoptions-promiseusquote) | 获取全市场美股行情 |
 | [`getAllQuotesByCodes`](#getallquotesbycodescodes-options-promisefullquote) | 批量获取指定股票行情 |
 
 ---
@@ -490,6 +494,45 @@ const pureCodes = await sdk.getAShareCodeList(false);
 
 ---
 
+### `getUSCodeList(includeMarket?): Promise<string[]>`
+
+获取全部美股代码列表。
+
+**参数**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `includeMarket` | `boolean` | 是否包含市场前缀（如 `105.`），默认 `true` |
+
+**示例**
+
+```typescript
+// 包含市场前缀
+const codes = await sdk.getUSCodeList();
+// ['105.MSFT', '105.AAPL', '106.BABA', ...]
+
+// 不包含市场前缀
+const pureCodes = await sdk.getUSCodeList(false);
+// ['MSFT', 'AAPL', 'BABA', ...]
+```
+
+> 市场代码说明：`105` = 纳斯达克，`106` = 纽交所，`107` = 其他
+
+---
+
+### `getHKCodeList(): Promise<string[]>`
+
+获取全部港股代码列表。
+
+**示例**
+
+```typescript
+const codes = await sdk.getHKCodeList();
+// ['00700', '09988', '03690', ...]
+```
+
+---
+
 ### `getAllAShareQuotes(options?): Promise<FullQuote[]>`
 
 获取全市场 A 股实时行情（5000+ 只股票），返回格式同 `getFullQuotes`。
@@ -500,7 +543,7 @@ const pureCodes = await sdk.getAShareCodeList(false);
 
 | 参数 | 类型 | 说明 |
 |------|------|------|
-| `options.batchSize` | `number` | 单次请求股票数量，默认 `500` |
+| `options.batchSize` | `number` | 单次请求股票数量，默认 `500`，最大 `500` |
 | `options.concurrency` | `number` | 最大并发数，默认 `7` |
 | `options.onProgress` | `(completed, total) => void` | 进度回调 |
 
@@ -515,6 +558,54 @@ const allQuotes = await sdk.getAllAShareQuotes({
   },
 });
 console.log(`共获取 ${allQuotes.length} 只股票`);
+```
+
+---
+
+### `getAllHKShareQuotes(options?): Promise<HKQuote[]>`
+
+获取全市场港股实时行情，返回格式同 `getHKQuotes`。
+
+**参数**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `options.batchSize` | `number` | 单次请求股票数量，默认 `500`，最大 `500` |
+| `options.concurrency` | `number` | 最大并发数，默认 `7` |
+| `options.onProgress` | `(completed, total) => void` | 进度回调 |
+
+**示例**
+
+```typescript
+const allHKQuotes = await sdk.getAllHKShareQuotes({
+  batchSize: 300,
+  concurrency: 3,
+});
+console.log(`共获取 ${allHKQuotes.length} 只港股`);
+```
+
+---
+
+### `getAllUSShareQuotes(options?): Promise<USQuote[]>`
+
+获取全市场美股实时行情，返回格式同 `getUSQuotes`。
+
+**参数**
+
+| 参数 | 类型 | 说明 |
+|------|------|------|
+| `options.batchSize` | `number` | 单次请求股票数量，默认 `500`，最大 `500` |
+| `options.concurrency` | `number` | 最大并发数，默认 `7` |
+| `options.onProgress` | `(completed, total) => void` | 进度回调 |
+
+**示例**
+
+```typescript
+const allUSQuotes = await sdk.getAllUSShareQuotes({
+  batchSize: 300,
+  concurrency: 3,
+});
+console.log(`共获取 ${allUSQuotes.length} 只美股`);
 ```
 
 ---
@@ -615,11 +706,42 @@ console.log(quotes[0].name);  // 阿里巴巴-W
 |------|------|------|
 | `codes` | `string[]` | 美股代码数组，如 `['BABA', 'AAPL']` |
 
+**返回类型**
+
+```typescript
+interface USQuote {
+  marketId: string;              // 市场标识
+  name: string;                  // 名称
+  code: string;                  // 股票代码
+  price: number;                 // 最新价
+  prevClose: number;             // 昨收
+  open: number;                  // 今开
+  volume: number;                // 成交量
+  time: string;                  // 时间
+  change: number;                // 涨跌额
+  changePercent: number;         // 涨跌幅%
+  high: number;                  // 最高
+  low: number;                   // 最低
+  amount: number;                // 成交额
+  turnoverRate: number | null;   // 换手率%
+  pe: number | null;             // 市盈率
+  amplitude: number | null;      // 振幅%
+  totalMarketCap: number | null; // 总市值(亿)
+  pb: number | null;             // 市净率
+  high52w: number | null;        // 52周最高价
+  low52w: number | null;         // 52周最低价
+  raw: string[];                 // 原始字段数组
+}
+```
+
 **示例**
 
 ```typescript
-const quotes = await sdk.getUSQuotes(['BABA', 'AAPL']);
-console.log(quotes[0].code);  // BABA.N
+const quotes = await sdk.getUSQuotes(['AAPL', 'MSFT']);
+console.log(quotes[0].code);        // AAPL.OQ
+console.log(quotes[0].price);       // 270.97
+console.log(quotes[0].high52w);     // 288.62
+console.log(quotes[0].low52w);      // 168.64
 ```
 
 ---
