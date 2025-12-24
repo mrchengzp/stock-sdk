@@ -171,7 +171,7 @@ import cron from 'node-cron';
 // 每分钟更新一次（交易时间）
 cron.schedule('* 9-15 * * 1-5', async () => {
   const quotes = await sdk.getAllAShareQuotes();
-  // 保存到数据库或缓存
+  // 保存到数据库或缓存等操作
   await saveToDatabase(quotes);
 });
 ```

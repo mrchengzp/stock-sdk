@@ -25,9 +25,9 @@
     "build": "tsup",
     "test": "vitest run",
     "dev": "yarn build && (sleep 1 && open http://localhost:4000/playground/ &) && npx serve -l 4000 .",
-    "docs:dev": "vitepress dev website",
-    "docs:build": "vitepress build website",
-    "docs:preview": "vitepress preview website"
+    "dev:docs": "vitepress dev website",
+    "build:docs": "vitepress build website",
+    "preview:docs": "vitepress preview website"
   },
   "keywords": [
     "stock",

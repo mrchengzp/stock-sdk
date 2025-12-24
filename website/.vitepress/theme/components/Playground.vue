@@ -506,6 +506,7 @@ function clearResult() {
 onMounted(async () => {
   initParams()
   try {
+    // @ts-ignore
     const module = await import('https://unpkg.com/stock-sdk/dist/index.js')
     sdk.value = new module.StockSDK()
     sdkLoaded.value = true
