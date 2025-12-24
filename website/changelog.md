@@ -2,6 +2,15 @@
 
 本页面记录 Stock SDK 的版本更新历史。
 
+## **[1.3.1](https://www.npmjs.com/package/stock-sdk/v/1.3.1)** (2025-12-24)
+
+### 优化
+
+**文档优化**
+- 官方网站上线，[https://chengzuopeng.github.io/stock-sdk/](https://chengzuopeng.github.io/stock-sdk/)
+- 优化 API 文档介绍
+- 一个 bigfix
+
 ## **[1.3.0](https://www.npmjs.com/package/stock-sdk/v/1.3.0)** (2025-12-23)
 
 ### 新增功能
