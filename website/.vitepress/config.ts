@@ -35,7 +35,7 @@ const zhSidebar = {
   '/api/': [
     {
       text: 'API 总览',
-      items: [{ text: '概览', link: '/api/' }],
+      items: [{ text: '概览', link: '/api' }],
     },
     {
       text: '实时行情',
@@ -123,7 +123,7 @@ const enSidebar = {
   '/en/api/': [
     {
       text: 'API Overview',
-      items: [{ text: 'Overview', link: '/en/api/' }],
+      items: [{ text: 'Overview', link: '/en/api' }],
     },
     {
       text: 'Real-time Quotes',
@@ -199,8 +199,8 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: '指南', link: '/guide/getting-started' },
-          { text: 'API', link: '/api/' },
-          { text: 'Playground', link: '/playground/' },
+          { text: 'API', link: '/api' },
+          { text: 'Playground', link: '/playground' },
           { text: '更新日志', link: '/changelog' },
         ],
         sidebar: zhSidebar,
@@ -248,8 +248,8 @@ export default defineConfig({
       themeConfig: {
         nav: [
           { text: 'Guide', link: '/en/guide/getting-started' },
-          { text: 'API', link: '/en/api/' },
-          { text: 'Playground', link: '/en/playground/' },
+          { text: 'API', link: '/en/api' },
+          { text: 'Playground', link: '/en/playground' },
           { text: 'Changelog', link: '/en/changelog' },
         ],
         sidebar: enSidebar,
