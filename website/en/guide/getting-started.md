@@ -20,7 +20,7 @@ const sdk = new StockSDK();
 
 #### Optional Configuration
 
-`StockSDK` accepts request configuration for proxy or timeout settings:
+`StockSDK` accepts request configuration for proxy, timeout, or custom headers:
 
 ```typescript
 const sdk = new StockSDK({
@@ -28,10 +28,23 @@ const sdk = new StockSDK({
   baseUrl: '/api/tencent',
   // Request timeout (milliseconds)
   timeout: 8000,
+  // Custom headers
+  headers: {
+    'X-Request-Source': 'my-app',
+  },
+  // Custom User-Agent (may be ignored in browsers)
+  userAgent: 'StockSDK/1.4',
+  // Retry configuration (optional)
+  retry: {
+    maxRetries: 5,       // Maximum retry attempts
+    baseDelay: 1000,     // Initial backoff delay
+  }
 });
 ```
 
 > It's recommended to reuse the same `StockSDK` instance to reduce repeated initialization.
+> 
+> See [Error Handling & Retry](/en/guide/retry) for detailed retry configuration.
 
 ### 2. Get Stock Quotes
 
@@ -186,4 +199,3 @@ console.log(`Got ${allQuotes.length} stocks`);
 - Check [API Documentation](/en/api/) for all available methods
 - Try [Online Playground](/en/playground/) for interactive experience
 - Learn about [Technical Indicators](/en/guide/indicators)
-
